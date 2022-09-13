@@ -1,0 +1,36 @@
+apply from: "$rootDir/gradle_config/configs.gradle"
+
+android {
+	compileSdkVersion Configs.COMPILE_SDK
+	buildToolsVersion Configs.BUILD_TOOL_VERSION
+
+	defaultConfig {
+		minSdk Configs.MIN_SDK
+		targetSdk Configs.TARGET_SDK
+		versionCode Configs.CODE
+		versionName Configs.Name
+		testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+	}
+
+	buildTypes {
+		release {
+			minifyEnabled false
+		}
+	}
+
+	buildFeatures {
+		viewBinding true
+	}
+
+	packagingOptions {
+		exclude("META-INF/*.kotlin_module")
+	}
+
+	compileOptions {
+		sourceCompatibility JavaVersion.VERSION_1_8
+		targetCompatibility JavaVersion.VERSION_1_8
+	}
+	kotlinOptions {
+		jvmTarget = Configs.JVM_TARGET
+	}
+}

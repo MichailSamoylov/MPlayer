@@ -1,0 +1,10 @@
+ext.Plugins = [
+	IDEA               : "idea",
+	ANDROID_APPLICATION: "com.android.application",
+	ANDROID_LIBRARY    : "com.android.library",
+	KOTLIN_ANDROID     : "kotlin-android",
+	KOTLIN_EXTENSIONS  : "kotlin-android-extensions",
+	KOTLIN_KAPT        : "kotlin-kapt",
+	KOTLIN             : "kotlin",
+	JAVA_LIBRARY       : "java-library",
+]

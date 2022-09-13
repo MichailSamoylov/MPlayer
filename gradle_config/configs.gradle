@@ -1,0 +1,14 @@
+ext.Configs = [
+	APPLICATION_ID    : "com.app.myplayer",
+
+	BUILD_TOOL_VERSION: "30.0.0",
+
+	CODE              : 1,
+	NAME              : "1.0",
+
+	COMPILE_SDK       : 30,
+	TARGET_SDK        : 30,
+	MIN_SDK           : 29,
+
+	JVM_TARGET        : "1.8",
+]

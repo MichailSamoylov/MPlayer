@@ -1,0 +1,12 @@
+apply from: "$rootDir/gradle_config/configs.gradle"
+
+java {
+	sourceCompatibility JavaVersion.VERSION_1_8
+	targetCompatibility JavaVersion.VERSION_1_8
+}
+
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = Configs.JVM_TARGET
+	}
+}

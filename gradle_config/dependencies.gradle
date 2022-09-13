@@ -1,0 +1,32 @@
+apply from: 'gradle_config/versions.gradle'
+ext.Dependencies = [
+	KOTLIN                 : "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.KOTLIN}",
+	KOTLIN_STANDARD_LIBRARY: "org.jetbrains.kotlin:kotlin-stdlib:${Versions.KOTLIN}",
+	REFLECT                : "org.jetbrains.kotlin:kotlin-reflect:${Versions.KOTLIN}",
+
+	KOIN_ANDROID           : "io.insert-koin:koin-android:${Versions.KOIN}",
+	KOIN_CORE              : "io.insert-koin:koin-core:${Versions.KOIN}",
+
+	GSON                   : "com.google.code.gson:gson:${Versions.GSON}",
+
+	GRADLE                 : "com.android.tools.build:gradle:${Versions.GRADLE}",
+	CORE                   : "androidx.core:core-ktx:${Versions.CORE}",
+	APP_COMPAT             : "androidx.appcompat:appcompat:${Versions.APP_COMPAT}",
+	MATERIAL               : "com.google.android.material:material:${Versions.MATERIAL}",
+	LIFECYCLE              : "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.LIFECYCLE}",
+	CONSTRAINT_LAYOUT      : "androidx.constraintlayout:constraintlayout:${Versions.CONSTRAINT_LAYOUT}",
+
+	CICERONE               : "com.github.terrakok:cicerone:${Versions.CICERONE}",
+	FRAGMENT               : "androidx.fragment:fragment-ktx:${Versions.FRAGMENT}",
+	GLIDE                  : "com.github.bumptech.glide:glide:${Versions.GLIDE}",
+
+	MOCKITO_CORE           : "org.mockito:mockito-core:${Versions.MOCKITO_CORE}",
+	MOCKITO_INLINE         : "org.mockito:mockito-inline:${Versions.MOCKITO_INLINE}",
+	MOCKITO_KOTLIN         : "org.mockito.kotlin:mockito-kotlin:${Versions.MOCKITO_KOTLIN}",
+
+	COROUTINE_CORE         : "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.COROUTINE}",
+	COROUTINE_ANDROID      : "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.COROUTINE}",
+	COROUTINE_TEST         : "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.COROUTINE}",
+
+	MEDIA                  : "androidx.media:media:${Versions.MEDIA}"
+]

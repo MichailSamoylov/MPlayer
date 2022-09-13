@@ -1,0 +1,8 @@
+<resources>
+	<string name="name_of_app">MPlayer</string>
+	<string name="dialog_title_text">Give permission for working app</string>
+	<string name="dialog_message_text">read external storage permission required</string>
+	<string name="permission_denied">The application cannot run if without permission to read data.</string>
+	<string name="positive_button_text">ok</string>
+	<string name="negative_button_text">cancel</string>
+</resources>

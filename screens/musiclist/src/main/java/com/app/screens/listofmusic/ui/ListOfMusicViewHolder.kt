@@ -8,7 +8,10 @@ import com.app.myplayer.shared.mp3scannersystem.domain.MusicEntity
 import com.app.screens.listofmusic.databinding.ItemOfMusicListBinding
 
 import android.view.View
+import androidx.appcompat.graphics.drawable.AnimatedStateListDrawableCompat
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import com.app.myplayer.additioanl.timeconverter.convertTimeToString
+import com.app.screens.listofmusic.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,6 +36,12 @@ class ListOfMusicViewHolder(
 		with(binding) {
 			nameOfTrack.text = entity.title
 			duration.text = convertTimeToString(entity.duration)
+			val myAnimVectorIcon = AnimatedVectorDrawableCompat.create(
+				binding.root.context,
+				R.drawable.anim_icon
+			)
+			songsPlayingIcon.setImageDrawable(myAnimVectorIcon)
+			myAnimVectorIcon?.start()
 
 			if (songIsPlaying) {
 				songsPlayingIcon.visibility = View.VISIBLE

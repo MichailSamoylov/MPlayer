@@ -1,0 +1,49 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:aapt="http://schemas.android.com/aapt"
+	android:width="158dp"
+	android:height="143dp"
+	android:viewportWidth="158"
+	android:viewportHeight="143">
+	<group
+		android:name="whole_icon">
+	<path
+		android:name="icon"
+		android:pathData="M95,100.5L137.176,75.386C141.842,72.052 148.376,63.486 137.176,55.886C125.976,48.286 84.509,25.052 65.175,14.386C52.842,9.052 26.176,6.086 18.176,36.886C8.176,75.386 15.5,106.5 50,124.5"
+		android:strokeWidth="20"
+		android:fillColor="#00000000"
+		android:strokeLineCap="round">
+		<aapt:attr name="android:strokeColor">
+			<gradient
+				android:startY="30"
+				android:startX="21"
+				android:endY="109.5"
+				android:endX="103"
+				android:type="linear">
+				<item android:offset="0"
+					android:color="#FFC124FF"/>
+				<item android:offset="0.50332"
+					android:color="#FF495DFC"/>
+				<item android:offset="1"
+					android:color="#FF00A871"/>
+			</gradient>
+		</aapt:attr>
+	</path>
+	<path
+		android:name="icon_circle"
+		android:pathData="M73,113m-10,0a10,10 0,1 1,20 0a10,10 0,1 1,-20 0">
+		<aapt:attr name="android:fillColor">
+			<gradient
+				android:startY="119.5"
+				android:startX="65"
+				android:endY="109"
+				android:endX="83"
+				android:type="linear">
+				<item android:offset="0"
+					android:color="#FF1C8DA5"/>
+				<item android:offset="1"
+					android:color="#FF06A37D"/>
+			</gradient>
+		</aapt:attr>
+	</path>
+	</group>
+</vector>

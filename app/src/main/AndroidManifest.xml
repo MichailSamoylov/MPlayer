@@ -3,7 +3,6 @@
 	package="com.app.location_app">
 
 	<uses-permission android:name="android.permission.INTERNET"/>
-
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
 	<application
@@ -16,7 +15,8 @@
 		android:theme="@style/Theme.App">
 
 		<activity
-			android:name=".ui.MainActivity">
+			android:name=".ui.MainActivity"
+			android:screenOrientation="portrait">
 			<intent-filter>
 				<action android:name="android.intent.action.MAIN"/>
 

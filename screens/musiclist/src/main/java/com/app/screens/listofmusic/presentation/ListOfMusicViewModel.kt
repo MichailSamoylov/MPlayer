@@ -25,14 +25,16 @@ class ListOfMusicViewModel(
 		)
 	}
 
-	fun setStateByDownToolBarClick(){
+	fun setStateByDownToolBarClick() {
 		val tempState = _state.value as? UIState.Content ?: return
-		when(tempState.stateOfPlayer){
+		when (tempState.stateOfPlayer) {
 			PlayerState.Start,
 			PlayerState.Continue -> _state.value = tempState.copy(stateOfPlayer = PlayerState.Pause)
 			PlayerState.Pause    -> _state.value = tempState.copy(stateOfPlayer = PlayerState.Continue)
-			PlayerState.Stop,
-			null                 -> Unit
+
+			PlayerState.Stop     -> Unit
+
+			null                 -> _state.value = tempState.copy(stateOfPlayer = PlayerState.Start)
 		}
 	}
 
@@ -44,6 +46,11 @@ class ListOfMusicViewModel(
 			_state.value = tempState.copy(lastPlayingItemEntity = entity, stateOfPlayer = PlayerState.Stop)
 			_state.value = tempState.copy(lastPlayingItemEntity = entity, stateOfPlayer = PlayerState.Start)
 		}
+	}
+
+	fun trekIsEnd() {
+		val tempState = _state.value as? UIState.Content ?: return
+		_state.value = tempState.copy(stateOfPlayer = null)
 	}
 
 	private fun setPlayingState(state: UIState.Content) {

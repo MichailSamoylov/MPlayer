@@ -1,6 +1,6 @@
 package com.app.location_app.navigation
 
-import com.app.myplayer.screens.start.presentation.StartRouter
+import com.app.service.screens.start.presentation.StartRouter
 import com.app.screens.listofmusic.getMusicListScreen
 import com.github.terrakok.cicerone.Router
 

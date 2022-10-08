@@ -1,9 +1,9 @@
 package com.app.screens.listofmusic.ui
 
 import android.annotation.SuppressLint
-import android.media.MediaPlayer
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,35 +14,32 @@ import com.app.screens.listofmusic.R
 import com.app.screens.listofmusic.databinding.FragmentListOfMusicBinding
 import com.app.screens.listofmusic.presentation.ListOfMusicViewModel
 import com.app.screens.listofmusic.presentation.PlayerState
+import com.app.screens.listofmusic.presentation.ServiceConnectionState
 import com.app.screens.listofmusic.presentation.UIState
-import java.lang.StringBuilder
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.app.screens.listofmusic.ui.list.ListOfMusicListAdapter
+import com.app.screens.listofmusic.ui.service.MyServiceConnection
+import com.app.service.additioanl.extension.isServiceRunning
+import com.app.service.additioanl.timeconverter.convertTimeToString
+import com.app.service.service.MediaService
+import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ListOfMusicFragment : Fragment() {
 
 	companion object {
 
-		private const val LOG_ERROR_TAG = "LOG_ERROR_TAG"
 		fun newInstance() = ListOfMusicFragment()
 	}
 
 	private val viewModel: ListOfMusicViewModel by viewModel()
-	private var mediaPlayer: MediaPlayer = MediaPlayer()
 	private lateinit var binding: FragmentListOfMusicBinding
 	private lateinit var adapter: ListOfMusicListAdapter
-	private val fragmentCoroutineScope = object : CoroutineScope {
-		override val coroutineContext: CoroutineContext
-			get() = Dispatchers.Main.immediate
-	}
-	private lateinit var job: Job
 
-	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+	private var mService: MediaService? = null
+	private var mBound: Boolean = false
+	private var connection: MyServiceConnection? = null
+
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 		super.onCreateView(inflater, container, savedInstanceState)
 		binding = FragmentListOfMusicBinding.inflate(inflater, container, false)
 		return binding.root
@@ -51,43 +48,65 @@ class ListOfMusicFragment : Fragment() {
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
 		initAdapter()
-		setObservers()
 		setListeners()
+		setObservers()
+		initConnection()
+		checkServiceAndTryConnect()
 	}
 
 	private fun initAdapter() {
 		adapter = ListOfMusicListAdapter(viewModel::setStateByItemClick)
-		binding.list.adapter = adapter
+		binding.recyclerView.adapter = adapter
 	}
 
 	private fun setObservers() {
 		viewModel.state.observe(viewLifecycleOwner, ::handleState)
 	}
 
-	@SuppressLint("UseCompatLoadingForDrawables")
 	private fun setListeners() {
-		mediaPlayer.setOnCompletionListener {
-			it.stop()
-			binding.buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_play, null))
-			job.cancel()
-			binding.seekBar.progress = 0
-			adapter.resetDataOfPlayingSong(null)
-			viewModel.trekIsEnd()
-			//it.release()
-		}
-		binding.buttonStopOrStart.setOnClickListener {
-			viewModel.setStateByDownToolBarClick()
-		}
-		binding.seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-
-			override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-				if (fromUser) mediaPlayer.seekTo(progress)
+		with(binding) {
+			buttonStopOrStart.setOnClickListener {
+				viewModel.setStateByDownToolBarClick()
 			}
 
-			override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+			seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
-			override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-		})
+				override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+					if (fromUser) mService?.requestResetServiceSeekBar(progress)
+				}
+
+				override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+
+				override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+			})
+		}
+	}
+
+	private fun checkServiceAndTryConnect() {
+		activity?.applicationContext?.let { context ->
+			if (context.isServiceRunning<MediaService>()) {
+				val intent = Intent(context, MediaService::class.java)
+				tryConnectToMediaService(context, intent)
+			}
+		}
+	}
+
+	private fun tryConnectToMediaService(context: Context, intent: Intent) {
+		if (context.bindService(intent, connection ?: return, Context.BIND_AUTO_CREATE)) {
+			viewModel.serviceIsStarting()
+		}
+	}
+
+	private fun initConnection() {
+		connection = MyServiceConnection(
+			doOnConnected = { binder ->
+				mService = binder.service
+				mService!!.state.observe(viewLifecycleOwner, viewModel::handelServiceState)
+				mBound = true
+			},
+			doOnDisconnected = {
+				closeMediaService()
+			})
 	}
 
 	private fun handleState(state: UIState) {
@@ -98,91 +117,126 @@ class ListOfMusicFragment : Fragment() {
 	}
 
 	private fun renderContent(state: UIState.Content) {
-		if (adapter.currentList != state.listOfMP3File) {
-			adapter.submitList(state.listOfMP3File)
+		with(binding) {
+			countOfTrek.text = StringBuilder()
+				.append(resources.getString(R.string.title_count_of_trek_text))
+				.append(state.listOfTrekFile.size)
+				.toString()
+			if (adapter.currentList != state.listOfTrekFile) {
+				adapter.submitList(state.listOfTrekFile)
+			}
+			if (state.serviceState == ServiceConnectionState.Disconnected) {
+				lowerMenu.visibility = View.GONE
+				adapter.resetDataOfPlayingSong(null)
+				if (state.lastTrekEntity.uri.isNotEmpty()) {
+					settingMediaService(state)
+				}
+			}
+			if (state.serviceState is ServiceConnectionState.Connected) {
+				renderConnectedChanges(state, state.serviceState)
+				if (!state.serviceState.sendChangesFromService) {
+					sendChangesInService(state, state.serviceState)
+				}
+			}
 		}
-		if (state.stateOfPlayer != null) {
-			binding.lowerMenu.visibility = View.VISIBLE
-		}
-		binding.countOfTrek.text = StringBuilder()
-			.append(resources.getString(R.string.title_count_of_trek_text))
-			.append(" ")
-			.append(state.listOfMP3File.size)
-			.toString()
-		workWithMediaPlayer(state)
 	}
 
 	@SuppressLint("UseCompatLoadingForDrawables")
-	private fun workWithMediaPlayer(state: UIState.Content) {
-		with(mediaPlayer) {
-			when (state.stateOfPlayer) {
+	private fun renderConnectedChanges(state: UIState.Content, connected: ServiceConnectionState.Connected) {
+		with(binding) {
+			lowerMenu.visibility = View.VISIBLE
+			seekBar.progress = connected.currentPosition.toInt()
+			currentTime.text = convertTimeToString(connected.currentPosition)
+			when (connected.stateOfPlayer) {
 				PlayerState.Pause    -> {
-					doSomethingInTryCatch("Pause") {
-						pause()
-						adapter.resetDataOfPlayingSong(null)
-						binding.buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_play, null))
-					}
+					adapter.resetDataOfPlayingSong(null)
+					buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_play, null))
 				}
 
 				PlayerState.Start    -> {
-					doSomethingInTryCatch("Start") {
-						adapter.resetDataOfPlayingSong(state.lastPlayingItemEntity.uri)
-						setOnPreparedListener {
-							it.start()
-							setSeekBar()
-							binding.titleOfPlayingSong.text = state.lastPlayingItemEntity.title
-							binding.buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_pause, null))
-						}
-						reset()
-						setDataSource(requireContext(), state.lastPlayingItemEntity.uri)
-						prepare()
-					}
+					adapter.resetDataOfPlayingSong(state.lastTrekEntity.uri)
+					seekBar.max = state.lastTrekEntity.duration.toInt()
+					maxTime.text = convertTimeToString(state.lastTrekEntity.duration)
+					titleOfPlayingSong.text = state.lastTrekEntity.title
+					buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_pause, null))
 				}
 
 				PlayerState.Continue -> {
-					doSomethingInTryCatch("Continue") {
-						adapter.resetDataOfPlayingSong(state.lastPlayingItemEntity.uri)
-						start()
-						binding.buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_pause, null))
-					}
+					adapter.resetDataOfPlayingSong(state.lastTrekEntity.uri)
+					buttonStopOrStart.setImageDrawable(resources.getDrawable(R.drawable.ic_pause, null))
 				}
 
 				PlayerState.Stop     -> {
-					doSomethingInTryCatch("Stop") {
-						stop()
-						adapter.resetDataOfPlayingSong(null)
-					}
+					adapter.resetDataOfPlayingSong(null)
+				}
+
+				PlayerState.Close    -> {
+					adapter.resetDataOfPlayingSong(null)
+					lowerMenu.visibility = View.GONE
+					closeMediaService()
 				}
 
 				null                 -> Unit
-
 			}
 		}
 	}
 
-	private fun setSeekBar() {
-		binding.seekBar.max = mediaPlayer.duration
-		redefinitionSeekBarProgress()
-	}
-
-	private fun redefinitionSeekBarProgress() {
-		job = fragmentCoroutineScope.launch {
-			delay(200)
-			try {
-				binding.seekBar.progress = mediaPlayer.currentPosition
-				redefinitionSeekBarProgress()
-			} catch (e: Exception) {
-				Log.e(LOG_ERROR_TAG, "$e SeekBar")
-				binding.seekBar.progress = 0
+	private fun sendChangesInService(state: UIState.Content, connected: ServiceConnectionState.Connected) {
+		when (connected.stateOfPlayer) {
+			PlayerState.Pause    -> {
+				mService?.requestPauseMedia()
 			}
+
+			PlayerState.Start    -> {
+				mService?.resetTrek(state.lastTrekEntity)
+			}
+
+			PlayerState.Continue -> {
+				mService?.requestPlayMedia()
+			}
+
+			else                 -> Unit
 		}
 	}
 
-	private fun doSomethingInTryCatch(textForLog: String, runBlock: () -> Unit) {
-		try {
-			runBlock()
-		} catch (e: Exception) {
-			Log.e(LOG_ERROR_TAG, "$e $textForLog")
+	private fun settingMediaService(state: UIState.Content) {
+		initConnection()
+
+		val appContext = activity?.applicationContext
+		val intent = formServiceIntent(state)
+
+		appContext?.let { context ->
+			startMediaService(context, intent)
 		}
+	}
+
+	private fun formServiceIntent(state: UIState.Content): Intent {
+		val gson = Gson()
+		val intent = Intent(context, MediaService::class.java)
+		intent.putExtra(MediaService.LIST_OF_ENTITY_KEY, gson.toJson(state.listOfTrekFile))
+		intent.putExtra(MediaService.MUSIC_ENTITY_KEY, gson.toJson(state.lastTrekEntity))
+		return intent
+	}
+
+	private fun startMediaService(context: Context, intent: Intent) {
+		connection?.let { conn ->
+			context.startForegroundService(intent)
+			context.bindService(intent, conn, Context.BIND_AUTO_CREATE)
+		}
+		viewModel.serviceIsStarting()
+	}
+
+	private fun closeMediaService() {
+		mService?.state?.removeObservers(viewLifecycleOwner)
+		connection?.let { conn -> requireActivity().applicationContext.unbindService(conn) }
+		connection = null
+		mBound = false
+		mService = null
+		viewModel.serviceIsEnding()
+	}
+
+	override fun onDestroyView() {
+		super.onDestroyView()
+		closeMediaService()
 	}
 }

@@ -3,7 +3,7 @@ package com.app.location_app.ui
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.app.location_app.R
-import com.app.myplayer.screens.start.getStartScreen
+import com.app.service.screens.start.getStartScreen
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
 import com.github.terrakok.cicerone.androidx.AppNavigator

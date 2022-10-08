@@ -3,7 +3,6 @@ apply plugin:Plugins.KOTLIN_ANDROID
 
 apply from:"$rootDir/gradle_config/android_library.gradle"
 dependencies {
-
 	implementation Dependencies.KOTLIN_STANDARD_LIBRARY
 	implementation Dependencies.CORE
 	implementation Dependencies.APP_COMPAT
@@ -13,7 +12,23 @@ dependencies {
 	implementation Dependencies.CICERONE
 	implementation Dependencies.KOIN_CORE
 	implementation Dependencies.KOIN_ANDROID
+	implementation Dependencies.GSON
 
-	implementation project(":shared:mp3scannersystem")
+
+	implementation "androidx.media:media:1.6.0"
+	// Kotlin + coroutines
+	implementation("androidx.work:work-runtime-ktx:2.7.1")
+
+	// optional - GCMNetworkManager support
+	implementation("androidx.work:work-gcm:2.7.1")
+
+	// optional - Test helpers
+	androidTestImplementation("androidx.work:work-testing:2.7.1")
+
+	// optional - Multiprocess support
+	implementation "androidx.work:work-multiprocess:2.7.1"
+	implementation project(':shared:musicfinder')
+
+	implementation project(":service")
 	implementation project(":additional")
 }

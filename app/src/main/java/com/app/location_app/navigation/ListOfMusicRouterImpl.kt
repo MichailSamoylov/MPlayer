@@ -5,7 +5,7 @@ import com.github.terrakok.cicerone.Router
 
 class ListOfMusicRouterImpl(private val router:Router): ListOfMusicRouter {
 
-	override fun navigateToSearchScreen() {
+	override fun navigateToTrekScreen() {
 
 	}
 

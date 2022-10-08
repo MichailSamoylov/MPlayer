@@ -2,7 +2,7 @@ package com.app.screens.listofmusic.presentation
 
 interface ListOfMusicRouter {
 
-	fun navigateToSearchScreen()
+	fun navigateToTrekScreen()
 
 	fun navigateBack()
 }

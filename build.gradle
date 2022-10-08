@@ -5,10 +5,11 @@ buildscript {
 	repositories {
 		google()
 		mavenCentral()
+		mavenCentral()
 	}
 	dependencies {
 		classpath Dependencies.GRADLE
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+		classpath Dependencies.KOTLIN
 	}
 }
 allprojects {

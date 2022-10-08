@@ -13,11 +13,10 @@ dependencies {
 	implementation Dependencies.CICERONE
 	implementation Dependencies.KOIN_CORE
 	implementation Dependencies.KOIN_ANDROID
-	implementation Dependencies.RETROFIT
 
-
+	implementation project(":service")
 	implementation project(":additional")
-	implementation project(":shared:mp3scannersystem")
+	implementation project(':shared:musicfinder')
 	implementation project(':screens:musiclist')
 	implementation project(':screens:start')
 }

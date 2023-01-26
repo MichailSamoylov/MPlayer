@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="title_count_of_trek_text">количество найденных композиций:\u0020</string>
+	<string name="start_current_time">00:00</string>
+	<string name="button_to_search_location_text">Перейти к экрану поиска локации</string>
+	<string name="button_exit">Выйти</string>
+</resources>

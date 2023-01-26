@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:theme="@style/Theme.MaterialComponents.DayNight"
+	android:id="@+id/item_of_music_list"
+	app:strokeColor="@color/blue"
+	app:strokeWidth="@dimen/size_1"
+	app:cardCornerRadius="@dimen/radius_10"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:layout_marginTop="@dimen/margin_8">
+
+	<androidx.constraintlayout.widget.ConstraintLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minHeight="@dimen/size_72"
+		android:orientation="horizontal"
+		android:background="@color/white"
+		android:padding="@dimen/margin_8">
+
+		<LinearLayout
+			android:id="@+id/linearLayout"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_marginStart="@dimen/margin_8"
+			app:layout_constraintStart_toStartOf="parent"
+			app:layout_constraintTop_toTopOf="parent"
+			app:layout_constraintBottom_toBottomOf="parent">
+
+			<ImageView
+				android:id="@+id/icon_of_song"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:src="@drawable/ic_note"
+				android:background="@drawable/main_gradient"
+				android:visibility="visible"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/linearLayout3"
+			android:layout_width="250dp"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			android:layout_marginStart="@dimen/margin_8"
+			app:layout_constraintStart_toEndOf="@+id/linearLayout"
+			app:layout_constraintTop_toTopOf="@+id/linearLayout"
+			app:layout_constraintBottom_toBottomOf="@+id/linearLayout">
+
+			<TextView
+				android:id="@+id/name_of_track"
+				android:layout_width="match_parent"
+				android:layout_height="@dimen/size_20"
+				android:textColor="@color/dark_blue"
+				android:textSize="@dimen/text_size_15"
+				tools:text="Name"/>
+
+			<TextView
+				android:id="@+id/duration"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/margin_16"
+				android:textSize="@dimen/text_size_10"
+				android:textColor="@color/dark_blue"
+				tools:text="Duration"/>
+		</LinearLayout>
+
+		<LinearLayout
+			android:id="@+id/linearLayout2"
+			android:layout_width="40dp"
+			android:layout_height="match_parent"
+			android:layout_marginEnd="@dimen/margin_8"
+			android:layout_marginStart="@dimen/margin_8"
+			app:layout_constraintBottom_toBottomOf="@+id/linearLayout3"
+			app:layout_constraintTop_toTopOf="@+id/linearLayout3"
+			app:layout_constraintStart_toEndOf="@+id/linearLayout3"
+			app:layout_constraintEnd_toEndOf="parent">
+
+			<ImageView
+				android:id="@+id/songs_playing_icon"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center"
+				android:rotation="180"
+				android:src="@drawable/icon_playing_trek"
+				android:visibility="visible"/>
+		</LinearLayout>
+
+	</androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
